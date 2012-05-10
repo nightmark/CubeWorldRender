@@ -75,6 +75,7 @@ public class Main extends SimpleApplication {
     };
     
     public void updateCube(int[][][] world){
+        System.out.println("updating cube");
         rootNode.detachAllChildren();
         if(oldSizeX > sizeX || oldSizeY > sizeY || oldSizeZ > sizeZ){
             for(int x = oldSizeX; x < sizeX; x++){
@@ -110,7 +111,8 @@ public class Main extends SimpleApplication {
                     rootNode.attachChild(worldGeometries[x][y][z]);
                 }
             }
-        }        
+        }
+        System.out.println("cube updated");
     }
     
     public void initWorld(){

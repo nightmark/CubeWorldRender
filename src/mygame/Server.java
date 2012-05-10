@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 /**
  *
@@ -87,6 +86,7 @@ public class Server implements Runnable{
                                     in.read(buffer, 0, 4);
                                     bb = ByteBuffer.wrap(buffer, 0, 4);
                                     world[x][y][z] = bb.getInt();
+                                    System.out.println("received coords " + x + " " + y + " " + z );
                                 }
                             }
                         }
@@ -98,6 +98,7 @@ public class Server implements Runnable{
                                 }
                             }
                         }
+                        System.out.println("world sent");
                         main.updateCube(world);
                         break;
                     default:

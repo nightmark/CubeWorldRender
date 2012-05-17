@@ -48,10 +48,11 @@ public class Server implements Runnable{
     public void listen(){
         Socket skt = null;
         try{
-            skt = srvr.accept(); 
+            skt = srvr.accept();
+            InputStream input = skt.getInputStream();
             while(running){
                     //System.out.println("Listening on " + PORT + "...");
-                    proccessPacket(skt.getInputStream());
+                    proccessPacket(input);
             }
         }catch(IOException ex){
                     System.err.println("Server Listening Error " + ex);
@@ -109,6 +110,7 @@ public class Server implements Runnable{
                         main.setSize(cubeSize);
                         System.out.println("setSize called");
                         bb.clear();
+                        System.out.println("Remaining " + in.available());
                         break;
                     case MANAGE_CUBE:
                         buffer = new byte[8];
@@ -125,7 +127,6 @@ public class Server implements Runnable{
                     case CHANGED_DATA:
                         System.out.println("Received Packet CHANGED_DATA");
                         buffer = new byte[8];
-                        System.out.println("Remaining2 " + in.available());
                         //read ID
                         in.read(buffer);
                         bb = ByteBuffer.wrap(buffer, 0, 8);
@@ -141,22 +142,23 @@ public class Server implements Runnable{
                         for(int z = 0; z < size; z++){
                             for(int y = 0; y < size; y++){
                                 for(int x = 0; x < size; x++){
-                                    in.read(buffer, 0, 4);
+                                    int read = in.read(buffer, 0, 4);
+                                    while( read != 4){
+                                        read += in.read(buffer, read, 4-read);
+                                    }
                                     bb = ByteBuffer.wrap(buffer, 0, 4);
                                     bb.order(ByteOrder.LITTLE_ENDIAN);
                                     world[x][y][z] = bb.getInt();
                                     if(world[x][y][z] != 0){
-                                        System.out.println(x + " " + y + " " + z + " is " + world[x][y][z]);
+//                                        System.out.println(x + " " + y + " " + z + " is " + world[x][y][z]);
                                         world[x][y][z] = 8;
                                     }                                    
                                     //System.out.println("received coords " + x + " " + y + " " + z );
                                 }
                             }
                         }
+//                        System.out.println("Remaining " + in.available());
                         System.out.println("Remaining " + in.available());
-                        if(in.available() > 0){
-                            System.out.println(in.read());
-                        }
                         System.out.println("world sent");
                         main.requestUpdate(world, cubeId);
                         break;

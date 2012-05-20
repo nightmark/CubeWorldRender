@@ -14,7 +14,6 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Main extends SimpleApplication {
 
@@ -30,6 +29,7 @@ public class Main extends SimpleApplication {
     private Server server;
     private AtomicBoolean updatePending = new AtomicBoolean(false);
     private int[][][] pendingWorld = null;
+    private boolean startServer = true;
     
     public static void main(String[] args) {        
         Main app = new Main();
@@ -49,7 +49,9 @@ public class Main extends SimpleApplication {
         initKeys();
         initWorld();
         initCube();
-        initServer();        
+        if(startServer){
+            initServer();   
+        }
     }
     
     private void initKeys() {
@@ -102,11 +104,11 @@ public class Main extends SimpleApplication {
         return sizeX;
     };
     
-    public synchronized void requestUpdate(int[][][] world, double id){        
+    public void requestUpdate(int[][][] world, double id){        
         if(updatePending.get() && cubeId != id){
             System.out.println("Not Updating " + id);
             return;
-        }        
+        }                
         pendingWorld = world;
         updatePending.set(true);
     }
@@ -161,10 +163,12 @@ public class Main extends SimpleApplication {
         for(int x = 0; x < sizeX; x++){
                 for(int y = 0; y < sizeY; y++){
                     for(int z = 0; z < sizeZ; z++){
-                        world[x][y][z] = new ColorRGBA(x/100f+0.15f, y/100f+0.3f, z/100f+0.35f, 0.8f);                        
+                        world[x][y][z] = new ColorRGBA(x/100f+0.15f, y/100f+0.3f, z/100f+0.35f, 0.3f);                        
                     }
                 }
         }
+        
+        insertObject();
     }
     
     public void initCube(){
@@ -187,5 +191,20 @@ public class Main extends SimpleApplication {
 
     void setId(double cubeId) {
         this.cubeId = cubeId;
+    }
+
+    private void insertObject() {
+        int[] startPos = {0, 0, DEFAULT_WORLD_SIZE-2};
+        world[startPos[0]][startPos[1]][startPos[2]] = new ColorRGBA(1f, 1f, 1f, 1f);
+        world[startPos[0] + 1][startPos[1]][startPos[2]] = new ColorRGBA(1f, 1f, 1f, 1f);
+        world[startPos[0] + 2][startPos[1]][startPos[2]] = new ColorRGBA(1f, 1f, 1f, 1f);
+        world[startPos[0] + 2][startPos[1] + 1][startPos[2]] = new ColorRGBA(1f, 1f, 1f, 1f);
+        world[startPos[0] + 1][startPos[1] + 2][startPos[2]] = new ColorRGBA(1f, 1f, 1f, 1f);
+        
+        world[startPos[0]][startPos[1]][startPos[2] +1] = new ColorRGBA(1f, 1f, 1f, 1f);
+        world[startPos[0] + 1][startPos[1]][startPos[2] +1] = new ColorRGBA(1f, 1f, 1f, 1f);
+        world[startPos[0] + 2][startPos[1]][startPos[2] +1] = new ColorRGBA(1f, 1f, 1f, 1f);
+        world[startPos[0] + 2][startPos[1] + 1][startPos[2] +1] = new ColorRGBA(1f, 1f, 1f, 1f);
+        world[startPos[0] + 1][startPos[1] + 2][startPos[2] +1] = new ColorRGBA(1f, 1f, 1f, 1f);
     }
 }

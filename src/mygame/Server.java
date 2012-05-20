@@ -11,8 +11,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -81,28 +79,16 @@ public class Server implements Runnable{
     
     public void proccessPacket(InputStream in){
         try{
-//            byte[] buffer = new byte[4];
-//            in.read();
-//            ByteBuffer bb;
-//            int line = 0;
-//            while ((in.read(buffer)) != -1){                
-//                bb = ByteBuffer.wrap(buffer);
-//                bb.order(ByteOrder.LITTLE_ENDIAN);
-//                System.out.println(line+" :"+getHex(buffer)+" = "+bb.getInt());
-//                line++;
-//            }
-//            System.out.println();
-//            return;
             int id = in.read();
             System.out.println("Remaining1 " + in.available());            
             ByteBuffer bb;
             byte[] buffer;
-            double cubeId;
+            long cubeId;
             if(id != -1){
                 switch(id){
                     case INFO:
                         buffer = new byte[4];
-                        in.read(buffer);                        
+                        readFully(in, buffer, 4);
                         bb = ByteBuffer.wrap(buffer);
                         bb.order(ByteOrder.LITTLE_ENDIAN);
                         int cubeSize = bb.getInt();
@@ -114,11 +100,14 @@ public class Server implements Runnable{
                         break;
                     case MANAGE_CUBE:
                         buffer = new byte[8];
-                        in.read(buffer);                        
+                        readFully(in, buffer, 8);                        
                         bb = ByteBuffer.wrap(buffer);
-                        bb.order(ByteOrder.LITTLE_ENDIAN);
-                        cubeId = bb.getDouble();
-                        in.read();
+                        bb.order(ByteOrder.LITTLE_ENDIAN);                        
+                        cubeId = bb.getLong();                        
+                        int neighbors = in.read();
+                        for(int i = 0; i < neighbors; i++){
+                            readFully(in, buffer, 8);
+                        }
                         System.out.println("Received Packet MANAGE_CUBE with id " + cubeId);
                         main.setId(cubeId);                        
                         bb.clear();
@@ -128,12 +117,12 @@ public class Server implements Runnable{
                         System.out.println("Received Packet CHANGED_DATA");
                         buffer = new byte[8];
                         //read ID
-                        in.read(buffer);
+                        readFully(in, buffer, 8);
                         bb = ByteBuffer.wrap(buffer, 0, 8);
                         bb.order(ByteOrder.LITTLE_ENDIAN);
-                        cubeId = bb.getDouble();
+                        cubeId = bb.getLong();
                         //read generation
-                        in.read(buffer);
+                        readFully(in, buffer, 8);
                         //read contents
                         //4bytes per cube cell
                         int size = main.getSize();
@@ -142,10 +131,7 @@ public class Server implements Runnable{
                         for(int z = 0; z < size; z++){
                             for(int y = 0; y < size; y++){
                                 for(int x = 0; x < size; x++){
-                                    int read = in.read(buffer, 0, 4);
-                                    while( read != 4){
-                                        read += in.read(buffer, read, 4-read);
-                                    }
+                                    readFully(in, buffer, 4);
                                     bb = ByteBuffer.wrap(buffer, 0, 4);
                                     bb.order(ByteOrder.LITTLE_ENDIAN);
                                     world[x][y][z] = bb.getInt();
@@ -157,8 +143,6 @@ public class Server implements Runnable{
                                 }
                             }
                         }
-//                        System.out.println("Remaining " + in.available());
-                        System.out.println("Remaining " + in.available());
                         System.out.println("world sent");
                         main.requestUpdate(world, cubeId);
                         break;
@@ -170,7 +154,7 @@ public class Server implements Runnable{
                 }                
             }
         }catch(Exception e){
-            System.err.println("Error processing packet");
+            System.err.print("Error processing packet ");
             e.printStackTrace(new PrintStream(System.err));
         }
         
@@ -184,5 +168,17 @@ public class Server implements Runnable{
             System.err.println("Error shutting down server " + e);
         }
         running = false;
+    }
+    
+    private void readFully(InputStream in, byte[] buffer, int len) throws IOException{
+        int read = in.read(buffer, 0, len);
+        int got = 0;
+        while( read != len){
+            got += in.read(buffer, read, len-read);
+            if (got == -1){
+                return;
+            }
+            read += got;
+        }
     }
 }

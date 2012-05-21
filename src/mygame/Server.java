@@ -80,7 +80,6 @@ public class Server implements Runnable{
     public void proccessPacket(InputStream in){
         try{
             int id = in.read();
-            System.out.println("Remaining1 " + in.available());            
             ByteBuffer bb;
             byte[] buffer;
             long cubeId;

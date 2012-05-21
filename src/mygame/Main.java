@@ -29,7 +29,7 @@ public class Main extends SimpleApplication {
     private Server server;
     private AtomicBoolean updatePending = new AtomicBoolean(false);
     private int[][][] pendingWorld = null;
-    private boolean startServer = true;
+    private boolean startServer = false;
     
     public static void main(String[] args) {        
         Main app = new Main();
@@ -49,8 +49,10 @@ public class Main extends SimpleApplication {
         initKeys();
         initWorld();
         initCube();
-        if(startServer){
+        if(startServer){            
             initServer();   
+        }else{
+            System.out.println("Server is switched off");
         }
     }
     
@@ -195,16 +197,32 @@ public class Main extends SimpleApplication {
 
     private void insertObject() {
         int[] startPos = {0, 0, DEFAULT_WORLD_SIZE-2};
-        world[startPos[0]][startPos[1]][startPos[2]] = new ColorRGBA(1f, 1f, 1f, 1f);
-        world[startPos[0] + 1][startPos[1]][startPos[2]] = new ColorRGBA(1f, 1f, 1f, 1f);
-        world[startPos[0] + 2][startPos[1]][startPos[2]] = new ColorRGBA(1f, 1f, 1f, 1f);
-        world[startPos[0] + 2][startPos[1] + 1][startPos[2]] = new ColorRGBA(1f, 1f, 1f, 1f);
-        world[startPos[0] + 1][startPos[1] + 2][startPos[2]] = new ColorRGBA(1f, 1f, 1f, 1f);
+        //glider
+//        world[startPos[0]][startPos[1]][startPos[2]] = new ColorRGBA(1f, 1f, 1f, 1f);
+//        world[startPos[0] + 1][startPos[1]][startPos[2]] = new ColorRGBA(1f, 1f, 1f, 1f);
+//        world[startPos[0] + 2][startPos[1]][startPos[2]] = new ColorRGBA(1f, 1f, 1f, 1f);
+//        world[startPos[0] + 2][startPos[1] + 1][startPos[2]] = new ColorRGBA(1f, 1f, 1f, 1f);
+//        world[startPos[0] + 1][startPos[1] + 2][startPos[2]] = new ColorRGBA(1f, 1f, 1f, 1f);
+//        
+//        world[startPos[0]][startPos[1]][startPos[2] +1] = new ColorRGBA(1f, 1f, 1f, 1f);
+//        world[startPos[0] + 1][startPos[1]][startPos[2] +1] = new ColorRGBA(1f, 1f, 1f, 1f);
+//        world[startPos[0] + 2][startPos[1]][startPos[2] +1] = new ColorRGBA(1f, 1f, 1f, 1f);
+//        world[startPos[0] + 2][startPos[1] + 1][startPos[2] +1] = new ColorRGBA(1f, 1f, 1f, 1f);
+//        world[startPos[0] + 1][startPos[1] + 2][startPos[2] +1] = new ColorRGBA(1f, 1f, 1f, 1f);
         
-        world[startPos[0]][startPos[1]][startPos[2] +1] = new ColorRGBA(1f, 1f, 1f, 1f);
-        world[startPos[0] + 1][startPos[1]][startPos[2] +1] = new ColorRGBA(1f, 1f, 1f, 1f);
-        world[startPos[0] + 2][startPos[1]][startPos[2] +1] = new ColorRGBA(1f, 1f, 1f, 1f);
-        world[startPos[0] + 2][startPos[1] + 1][startPos[2] +1] = new ColorRGBA(1f, 1f, 1f, 1f);
-        world[startPos[0] + 1][startPos[1] + 2][startPos[2] +1] = new ColorRGBA(1f, 1f, 1f, 1f);
+        //oscillator
+        world[startPos[0]][startPos[1]][startPos[2]] = new ColorRGBA(1f, 1f, 1f, 1f);
+        world[startPos[0]][startPos[1] + 1][startPos[2]] = new ColorRGBA(1f, 1f, 1f, 1f);
+        world[startPos[0] +1][startPos[1]][startPos[2]] = new ColorRGBA(1f, 1f, 1f, 1f);
+        world[startPos[0] +2][startPos[1] + 3][startPos[2]] = new ColorRGBA(1f, 1f, 1f, 1f);
+        world[startPos[0] +3][startPos[1] + 3][startPos[2]] = new ColorRGBA(1f, 1f, 1f, 1f);
+        world[startPos[0] +3][startPos[1] + 2][startPos[2]] = new ColorRGBA(1f, 1f, 1f, 1f);        
+        
+        world[startPos[0]][startPos[1]][startPos[2] -1] = new ColorRGBA(1f, 1f, 1f, 1f);
+        world[startPos[0]][startPos[1] + 1][startPos[2]-1] = new ColorRGBA(1f, 1f, 1f, 1f);
+        world[startPos[0] +1][startPos[1]][startPos[2]-1] = new ColorRGBA(1f, 1f, 1f, 1f);
+        world[startPos[0] +2][startPos[1] + 3][startPos[2]-1] = new ColorRGBA(1f, 1f, 1f, 1f);
+        world[startPos[0] +3][startPos[1] + 3][startPos[2]-1] = new ColorRGBA(1f, 1f, 1f, 1f);
+        world[startPos[0] +3][startPos[1] + 2][startPos[2]-1] = new ColorRGBA(1f, 1f, 1f, 1f);        
     }
 }
